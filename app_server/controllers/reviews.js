@@ -11,7 +11,7 @@ const reviewsPage = async (req, res) => {
   const { data } = await axios.get(`${API_SERVER}/reviews`, {
     params: { ...req.query, perPage: REWIEWS_PER_PAGE },
   });
-
+  console.log(data);
   const { reviews, pages, page } = data;
   const { id: owner } = req.session;
   res.render("reviews", {
