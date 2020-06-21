@@ -251,7 +251,7 @@
     if (deleteButtons) {
         for (let btn of deleteButtons) {
             btn.addEventListener("click", async (e) => {
-                const { id } = e.explicitOriginalTarget;
+                const { id } = e.target;
                 const reviewId = id.split("delete")[1]
 
                 try {
@@ -305,7 +305,7 @@
                 for (let [name, value] of data) {
                     body[name] = value;
                 }
-                const { id } = e.explicitOriginalTarget;
+                const { id } = e.target;
 
                 const reviewId = id.split("form")[1]
 

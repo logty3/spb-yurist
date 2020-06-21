@@ -48,7 +48,7 @@
 
     for (let btn of deleteButtons) {
         btn.addEventListener("click", async (e) => {
-            const { id } = e.explicitOriginalTarget;
+            const { id } = e.target.id;
             const postId = id.slice(6)
             try {
                 const { status } = await fetch(`/admin/post/${postId}`, {
