@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Совместное Правовое Бюро</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css" />
+</head>
+
+<body class="d-flex flex-column h-100">
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <a class="navbar-brand" href="/">СПБ</a>
+            <div id="navbarCollapse" class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item <% if(active=='contacts') {%>active<% }%>">
+                        <a class="nav-link" href="/contacts">Контакты</a>
+                    </li>
+                    <li class="nav-item <% if(active=='about') {%>active<% }%>">
+                        <a class="nav-link" href="/about">Обо мне</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle  <% if(active=='price'||active=='individuals'||active=='legalentities') {%>active<% }%>"
+                            href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Услуги</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item <% if(active=='price') {%>active<% }%>"
+                                href="/services/price">Прайс</a>
+                            <a class="dropdown-item <% if(active=='individuals') {%>active<% }%>"
+                                href="/services/individuals">Услуги гражданам</a>
+                            <a class="dropdown-item <% if(active=='legalentities') {%>active<% }%>"
+                                href="/services/legalentities">Услуги бизнесу</a>
+                        </div>
+                    </li>
+                    <li class="nav-item <% if(active=='practice') {%>active<% }%>">
+                        <a class="nav-link" href="/practice">Судебная практика</a>
+                    </li>
+                    <li class="nav-item <% if(active=='forms') {%>active<% }%>">
+                        <a class="nav-link" href="/forms">Формы документов</a>
+                    </li>
+                    <li class="nav-item <% if(active=='reviews') {%>active<% }%>">
+                        <a class="nav-link" href="/reviews">Отзывы</a>
+                    </li>
+                    <li class="nav-item <% if(active=='blog') {%>active<% }%>">
+                        <a class="nav-link" href="/blog">Блог</a>
+                    </li>
+                    <%if(isAdmin){%>
+                    <li class="nav-item <% if(active=='admin') {%>active<% }%>">
+                        <a class="nav-link" href="/admin">Панель управления</a>
+                    </li>
+                    <%}%>
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <main class="flex-shrink-0 container row" role="main">
