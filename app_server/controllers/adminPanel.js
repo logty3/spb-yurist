@@ -6,6 +6,7 @@ const adminAuth = (req, res) => {
   const { isAdmin } = req.session;
   if (!isAdmin) {
     const { password } = req.query;
+    console.log(password, ADMIN_PASSWORD);
     if (password != ADMIN_PASSWORD) {
       return res.redirect("/");
     }
