@@ -6,11 +6,11 @@ const adminAuth = (req, res) => {
   const { isAdmin } = req.session;
   if (!isAdmin) {
     const { password } = req.query;
-    console.log(password == ADMIN_PASSWORD);
+
     if (password != ADMIN_PASSWORD) {
       return res.redirect("/");
     }
-    req.session.isAdmin = isAdmin;
+    req.session.isAdmin = true;
     return res.redirect("/admin");
   }
 
