@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "set NODE_ENV=development && webpack --watch --mode development",
-    "build": "webpack --mode production",
+    "buildW": "webpack --mode production",
     "mocks": "set NODE_ENV=development && node mocks.js"
   },
   "keywords": [],
