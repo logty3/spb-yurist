@@ -23,7 +23,7 @@ const reviewsGet = async (req, res) => {
     console.log(err);
     res.json({ ok: false, error: "Ошибка на сервере" });
   }
-
+  console.log(reviews);
   res.json({ ok: true, reviews, pages, page });
 };
 
