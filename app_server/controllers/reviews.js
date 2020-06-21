@@ -8,8 +8,7 @@ const axios = require("axios");
 
 const reviewsPage = async (req, res) => {
   const { isAdmin } = req.session;
-  console.log(`${API_SERVER}/reviews`);
-  return;
+
   const { data } = await axios.get(`${API_SERVER}/reviews`, {
     params: { ...req.query, perPage: REWIEWS_PER_PAGE },
   });

@@ -9,5 +9,5 @@ module.exports = {
   POSTS_PER_PAGE: process.env.POSTS_PER_PAGE,
   ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
   SESSION_SECRET: process.env.SESSION_SECRET,
-  API_SERVER: `${process.env.API_SERVER}:${process.env.PORT}/api`,
+  API_SERVER: `${process.env.API_SERVER}/api`,
 };
