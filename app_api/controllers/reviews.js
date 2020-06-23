@@ -1,78 +1,99 @@
 const { Reviews } = require("../models");
 const { ADMIN_PASSWORD } = require("../../config");
+const { validator } = require("../utils");
 
 const reviewsGet = async (req, res) => {
-  let reviews = null;
-  const page = +req.query.page || 1;
+  let { page, perPage } = req.query;
 
-  const perPage = +req.query.perPage || 1;
-  let pages;
+  const errors = [
+    ...validator({ exists: true, isNum: true, min: 1 })(page, "page"),
+    ...validator({ exists: true, isNum: true, min: 1, max: 1000 })(
+      perPage,
+      "perPage"
+    ),
+  ];
+  page = +page;
+  perPage = +perPage;
+  if (errors.length > 0) {
+    return res.status(400).json({
+      ok: false,
+      errors,
+    });
+  }
+
   try {
     const count = await Reviews.countDocuments();
-    pages = Math.ceil(count / perPage);
-    reviews = await Reviews.find()
+    const pages = Math.ceil(count / perPage);
+    let reviews = await Reviews.find()
       .sort({ reviewId: -1 })
       .skip(perPage * page - perPage)
       .limit(perPage);
-    if (reviews.length == 0) {
-      const last = count % 3 || perPage;
-      reviews = await Reviews.find().limit(last);
-      reviews.reverse();
-    }
-  } catch (err) {
-    console.log(err);
-    res.json({ ok: false, error: "Ошибка на сервере" });
-  }
 
-  res.json({ ok: true, reviews, pages, page });
+    if (reviews.length == 0) {
+      const last = count % perPage || perPage;
+      reviews = await Reviews.find().skip(count - last);
+    }
+
+    res.status(200).json({ ok: true, reviews, pages });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      ok: false,
+      errors: [{ message: "Internal server error" }],
+    });
+  }
 };
 
 const reviewGet = async (req, res) => {
   const { reviewId } = req.params;
+
+  const errors = [
+    ...validator({
+      exists: true,
+      isNum: true,
+      isPositive: true,
+    })(reviewId, "reviewId"),
+  ];
+
+  if (errors.length > 0) {
+    return res.status(404).json({
+      ok: false,
+      errors: [{ message: "review not found" }],
+    });
+  }
+
   try {
     const review = await Reviews.findOne({ reviewId });
     if (!review)
-      return res.json({
+      return res.status(404).json({
         ok: false,
-        error: "Отзыв не найден",
+        errors: [{ message: "review not found" }],
       });
     res.json({
       ok: true,
       review,
     });
   } catch (err) {
-    console.log(err);
-    res.json({
+    console.error(err);
+    res.status(500).json({
       ok: false,
-      error: "Ошибка на сервере",
+      errors: [{ message: "Internal server error" }],
     });
   }
 };
 
 const reviewAdd = async (req, res) => {
   const { name, text, owner } = req.body;
-  if (!name) {
-    return res.json({
+
+  const errors = [
+    ...validator({ exists: true, min: 2, max: 3 })(name, "name"),
+    ...validator({ exists: true, min: 5, max: 1000 })(text, "text"),
+  ];
+
+  if (errors.length > 0) {
+    return res.status(400).json({
       ok: false,
-      error: "Введите имя",
-    });
-  }
-  if (name.length < 2) {
-    return res.json({
-      ok: false,
-      error: "Слишком короткое имя",
-    });
-  }
-  if (!text) {
-    return res.json({
-      ok: false,
-      error: "Напишите отзыв",
-    });
-  }
-  if (text.length < 5) {
-    return res.json({
-      ok: false,
-      error: "Слишком короткий отзыв",
+      errors,
     });
   }
 
@@ -89,21 +110,39 @@ const reviewAdd = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.json({
+    res.status(500).json({
       ok: false,
-      error: "Ошибка на сервере",
+      errors: { message: "Internal server error" },
     });
   }
 };
 
 const reviewDelete = async (req, res) => {
-  const { reviewId, password } = req.params;
-  if (password != ADMIN_PASSWORD) {
+  const { reviewId } = req.params;
+  const { authorization: password } = req.headers;
+
+  if (password !== ADMIN_PASSWORD) {
     return res.status(403).end();
   }
 
+  const errors = [
+    ...validator({
+      exists: true,
+      isNum: true,
+      isPositive: true,
+    })(reviewId, "reviewId"),
+  ];
+
+  if (errors.length > 0) {
+    return res.status(404).end();
+  }
+
   try {
-    await Reviews.deleteOne({ reviewId });
+    const { deletedCount } = await Reviews.deleteOne({ reviewId });
+
+    if (deletedCount == 0) {
+      return res.status(404).end();
+    }
     res.status(200).end();
   } catch (err) {
     console.log(err);
@@ -116,21 +155,50 @@ const reviewEdit = async (req, res) => {
 
   const { name, text, owner } = req.body;
 
+  const errors = [
+    ...validator({ exists: true, min: 2, max: 32 })(name, "name"),
+    ...validator({ exists: true, min: 5, max: 1000 })(text, "text"),
+    ...validator({
+      exists: true,
+      isNum: true,
+      isPositive: true,
+    })(reviewId, "reviewId"),
+    ...validator({
+      exists: true,
+    })(owner, "owner"),
+  ];
+
+  if (errors.length > 0) {
+    return res.status(400).json({
+      ok: false,
+      errors,
+    });
+  }
+
   try {
     const review = await Reviews.findOneAndUpdate(
       { reviewId, owner },
-      { name, text }
+      { name, text },
+      {
+        new: true,
+      }
     );
 
+    if (!review) {
+      return res.status(404).json({
+        ok: false,
+        errors: [{ message: "review not found" }],
+      });
+    }
     res.json({
       ok: true,
       review,
     });
   } catch (err) {
     console.log(err);
-    res.json({
+    res.status(500).json({
       ok: false,
-      error: "Ошибка на сервере",
+      errors: [{ message: "Internal server error" }],
     });
   }
 };

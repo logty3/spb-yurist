@@ -6,7 +6,7 @@ router.get("/reviews", reviews.reviewsGet);
 router.get("/reviews/:reviewId", reviews.reviewGet);
 router.post("/reviews", reviews.reviewAdd);
 router.put("/reviews/:reviewId", reviews.reviewEdit);
-router.delete("/reviews/:reviewId/:password", reviews.reviewDelete);
+router.delete("/reviews/:reviewId", reviews.reviewDelete);
 
 router.get("/posts", posts.postsGet);
 router.get("/posts/:postId", posts.postGet);

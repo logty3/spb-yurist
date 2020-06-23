@@ -8,20 +8,26 @@ const axios = require("axios");
 
 const reviewsPage = async (req, res) => {
   const { isAdmin } = req.session;
+  try {
+    const { data } = await axios.get(`${API_SERVER}/reviews`, {
+      params: { ...req.query, perPage: REWIEWS_PER_PAGE },
+    });
 
-  const { data } = await axios.get(`${API_SERVER}/reviews`, {
-    params: { ...req.query, perPage: REWIEWS_PER_PAGE },
-  });
-  const { reviews, pages, page } = data;
-  const { id: owner } = req.session;
-  res.render("reviews", {
-    active: "reviews",
-    reviews,
-    page,
-    pages,
-    isAdmin,
-    owner,
-  });
+    const { reviews, pages, page } = data;
+    const { id: owner } = req.session;
+
+    res.render("reviews", {
+      active: "reviews",
+      reviews,
+      page,
+      pages,
+      isAdmin,
+      owner,
+    });
+  } catch (error) {
+    console.log(error);
+    res.send("error");
+  }
 };
 
 const reviewAdd = async (req, res) => {

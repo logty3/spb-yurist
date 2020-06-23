@@ -1,5 +1,6 @@
 const { Posts } = require("../models");
 const { ADMIN_PASSWORD } = require("../../config");
+const { validator } = require("../utils");
 
 const postsGet = async (req, res) => {
   let posts = null;

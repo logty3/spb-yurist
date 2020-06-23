@@ -13,7 +13,6 @@ const schema = new Schema(
     },
     owner: {
       type: String,
-      required: true,
     },
     reviewId: { type: Number },
   },
