@@ -22,7 +22,7 @@ const reviewAdd = async (req, res) => {
       name,
       text,
       owner,
-    }).select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
+    }).select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
 
     res.json({
       ok: true,
@@ -65,14 +65,14 @@ const reviewsGet = async (req, res) => {
       .sort({ reviewId: -1 })
       .skip(perPage * page - perPage)
       .limit(perPage)
-      .select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
+      .select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
 
     if (reviews.length == 0) {
       const last = count % perPage || perPage;
       reviews = await Reviews.find()
         .sort({ reviewId: -1 })
         .skip(count - last)
-        .select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
+        .select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
     }
 
     res.status(200).json({ ok: true, reviews, pages, page });
@@ -105,8 +105,8 @@ const reviewGet = async (req, res) => {
 
   try {
     const review = await Reviews.findOne({ reviewId }).select({
-      title: 1,
-      body: 1,
+      name: 1,
+      text: 1,
       createdAt: 1,
       reviewId: 1,
     });
@@ -160,7 +160,7 @@ const reviewEdit = async (req, res) => {
       {
         new: true,
       }
-    ).select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
+    ).select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
 
     if (!review) {
       return res.status(404).json({
