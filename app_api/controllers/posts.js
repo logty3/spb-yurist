@@ -55,7 +55,6 @@ const postsGet = async (req, res) => {
       "perPage"
     ),
   ];
-
   if (errors.length > 0) {
     return res.status(400).json({
       ok: false,
