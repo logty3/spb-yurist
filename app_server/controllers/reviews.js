@@ -6,6 +6,31 @@ const {
 
 const axios = require("axios");
 
+const reviewAdd = async (req, res, next) => {
+  const { id } = req.session;
+  try {
+    const { data } = await axios.post(`${API_SERVER}/reviews`, {
+      ...req.body,
+      owner: id,
+    });
+    if (data.ok) {
+      if (!req.session.reviews) {
+        req.session.reviews = [];
+      }
+      const { reviewId } = data.review;
+      req.session.reviews.push(reviewId);
+    }
+
+    res.json(data);
+  } catch (error) {
+    const { data, status } = error.response;
+    if (400 <= status < 500) {
+      return res.status(status).json(data);
+    }
+    next(error);
+  }
+};
+
 const reviewsPage = async (req, res, next) => {
   const { isAdmin } = req.session;
   try {
@@ -38,20 +63,21 @@ const reviewsPage = async (req, res, next) => {
   }
 };
 
-const reviewAdd = async (req, res, next) => {
-  const { id } = req.session;
+const reviewEdit = async (req, res, next) => {
+  const { reviews, id } = req.session;
+  const { reviewId } = req.params;
+  if (reviews.indexOf(+reviewId) == -1) {
+    return res.status(403).json({
+      ok: false,
+      errors: [{ message: "access denied" }],
+    });
+  }
+
   try {
-    const { data } = await axios.post(`${API_SERVER}/reviews`, {
+    const { data } = await axios.put(`${API_SERVER}/reviews/${reviewId}`, {
       ...req.body,
       owner: id,
     });
-    if (data.ok) {
-      if (!req.session.reviews) {
-        req.session.reviews = [];
-      }
-      const { reviewId } = data.review;
-      req.session.reviews.push(reviewId);
-    }
 
     res.json(data);
   } catch (error) {
@@ -100,35 +126,9 @@ const reviewDelete = async (req, res, next) => {
   }
 };
 
-const reviewEdit = async (req, res, next) => {
-  const { reviews, id } = req.session;
-  const { reviewId } = req.params;
-  if (reviews.indexOf(+reviewId) == -1) {
-    return res.status(403).json({
-      ok: false,
-      errors: [{ message: "access denied" }],
-    });
-  }
-
-  try {
-    const { data } = await axios.put(`${API_SERVER}/reviews/${reviewId}`, {
-      ...req.body,
-      owner: id,
-    });
-
-    res.json(data);
-  } catch (error) {
-    const { data, status } = error.response;
-    if (400 <= status < 500) {
-      return res.status(status).json(data);
-    }
-    next(error);
-  }
-};
-
 module.exports = {
-  reviewsPage,
   reviewAdd,
-  reviewDelete,
+  reviewsPage,
   reviewEdit,
+  reviewDelete,
 };

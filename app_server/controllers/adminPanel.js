@@ -59,32 +59,6 @@ const postAdd = async (req, res) => {
   }
 };
 
-const postDelete = async (req, res) => {
-  const { isAdmin } = req.session;
-  const { postId } = req.params;
-  if (!isAdmin) {
-    return res.redirect(307, "/");
-  }
-  try {
-    const { status } = await axios.delete(
-      encodeURI(`${API_SERVER}/posts/${postId}`),
-      {
-        headers: {
-          Authorization: ADMIN_PASSWORD,
-        },
-      }
-    );
-
-    res.status(status).end();
-  } catch (error) {
-    const { status } = error.response;
-    if (400 <= status < 500) {
-      return res.status(status).end();
-    }
-    next(error);
-  }
-};
-
 const postEditPage = async (req, res) => {
   const { isAdmin } = req.session;
   const { postId } = req.params;
@@ -147,11 +121,37 @@ const postEdit = async (req, res) => {
   }
 };
 
+const postDelete = async (req, res) => {
+  const { isAdmin } = req.session;
+  const { postId } = req.params;
+  if (!isAdmin) {
+    return res.redirect(307, "/");
+  }
+  try {
+    const { status } = await axios.delete(
+      encodeURI(`${API_SERVER}/posts/${postId}`),
+      {
+        headers: {
+          Authorization: ADMIN_PASSWORD,
+        },
+      }
+    );
+
+    res.status(status).end();
+  } catch (error) {
+    const { status } = error.response;
+    if (400 <= status < 500) {
+      return res.status(status).end();
+    }
+    next(error);
+  }
+};
+
 module.exports = {
   adminAuth,
   postAddPage,
   postAdd,
-  postDelete,
   postEditPage,
   postEdit,
+  postDelete,
 };

@@ -25,8 +25,8 @@ router.get("/services/price", services.price);
 router.get("/services/legalentities", services.legalentities);
 router.get("/services/individuals", services.individuals);
 
-router.get("/reviews", reviews.reviewsPage);
 router.post("/reviews", reviews.reviewAdd);
+router.get("/reviews", reviews.reviewsPage);
 router.put("/reviews/:reviewId", reviews.reviewEdit);
 router.delete("/reviews/:reviewId", reviews.reviewDelete);
 
