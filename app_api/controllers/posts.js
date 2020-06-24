@@ -70,7 +70,7 @@ const postsGet = async (req, res) => {
     const count = await Posts.countDocuments();
     const pages = Math.ceil(count / perPage);
     let posts = await Posts.find()
-      .sort({ reviewId: -1 })
+      .sort({ postId: -1 })
       .skip(perPage * page - perPage)
       .limit(perPage);
 
@@ -91,7 +91,6 @@ const postsGet = async (req, res) => {
 
 const postGet = async (req, res) => {
   const { postId } = req.params;
-
   const errors = [
     ...validator({
       exists: true,

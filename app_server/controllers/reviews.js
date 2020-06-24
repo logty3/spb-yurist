@@ -25,9 +25,10 @@ const reviewsPage = async (req, res, next) => {
       owner,
     });
   } catch (error) {
-    if (400 <= error.response.status < 500) {
-      const { errors } = error.response.data;
-      return res.render("reviews/error", {
+    const { status, data } = error.response;
+    if (400 <= status < 500) {
+      const { errors } = data;
+      return res.status(status).render("reviews/error", {
         active: "reviews",
         isAdmin,
         errors,

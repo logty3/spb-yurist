@@ -1,4 +1,4 @@
-<%- include("../layout/header") %>
+<%- include("../../layout/header") %>
 <%if(post){%>
 <div class="card mb-10">
 
@@ -39,7 +39,7 @@
 <%}else{%>
 <div>Пост не найден</div>
 <%}%>
-<%- include("../layout/footer") %>
+<%- include("../../layout/footer") %>
 
 <%if(isAdmin){%>
 <script>
@@ -55,7 +55,7 @@
                     method: "DELETE",
                 });
                 if (status == 200) {
-                    document.location.reload();
+                    document.location = "/blog"
                 }
 
             } catch (err) {

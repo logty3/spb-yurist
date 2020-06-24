@@ -60,7 +60,7 @@ app.get("*", (req, res) => {
   res.redirect("/");
 });
 app.post("/", (req, res) => {
-  res.end();
+  res.json({});
 });
 app.post("*", (req, res) => {
   res.redirect(307, "/");

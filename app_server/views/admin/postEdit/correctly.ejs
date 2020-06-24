@@ -1,4 +1,4 @@
-<%- include("../layout/header") %>
+<%- include("../../layout/header") %>
 
 <div class="col-md-10  list-group-item pb-4">
     <form id="post_form">
@@ -39,12 +39,12 @@
                 },
                 body: JSON.stringify(body),
             });
-            const result = await response.json();
-            console.log(result)
+            const { post } = await response.json();
+            document.location = `/blog/${post.postId}`
         } catch (err) {
             console.log(err);
         }
     };
 </script>
 
-<%- include("../layout/footer") %>
+<%- include("../../layout/footer") %>

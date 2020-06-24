@@ -37,12 +37,26 @@ const postAdd = async (req, res) => {
   if (!isAdmin) {
     return res.redirect(307, "/");
   }
-  const { data } = await axios.post(`${API_SERVER}/posts`, {
-    ...req.body,
-    password: ADMIN_PASSWORD,
-  });
-
-  res.json(data);
+  try {
+    const { data } = await axios.post(
+      `${API_SERVER}/posts`,
+      {
+        ...req.body,
+      },
+      {
+        headers: {
+          Authorization: ADMIN_PASSWORD,
+        },
+      }
+    );
+    res.json(data);
+  } catch (error) {
+    const { data, status } = error.response;
+    if (400 <= status < 500) {
+      return res.status(status).json(data);
+    }
+    next(error);
+  }
 };
 
 const postDelete = async (req, res) => {
@@ -51,12 +65,24 @@ const postDelete = async (req, res) => {
   if (!isAdmin) {
     return res.redirect(307, "/");
   }
+  try {
+    const { status } = await axios.delete(
+      encodeURI(`${API_SERVER}/posts/${postId}`),
+      {
+        headers: {
+          Authorization: ADMIN_PASSWORD,
+        },
+      }
+    );
 
-  const { status } = await axios.delete(
-    `${API_SERVER}/posts/${postId}/${ADMIN_PASSWORD}`
-  );
-
-  res.status(status).end();
+    res.status(status).end();
+  } catch (error) {
+    const { status } = error.response;
+    if (400 <= status < 500) {
+      return res.status(status).end();
+    }
+    next(error);
+  }
 };
 
 const postEditPage = async (req, res) => {
@@ -66,15 +92,30 @@ const postEditPage = async (req, res) => {
     return res.redirect("/");
   }
 
-  const { data } = await axios.get(`${API_SERVER}/posts/${postId}`);
+  try {
+    const { data } = await axios.get(
+      encodeURI(`${API_SERVER}/posts/${postId}`)
+    );
 
-  const { post } = data;
+    const { post } = data;
 
-  res.render("admin/postEdit", {
-    active: "admin",
-    isAdmin,
-    post,
-  });
+    res.render("admin/postEdit/correctly", {
+      active: "admin",
+      isAdmin,
+      post,
+    });
+  } catch (error) {
+    const { status, data } = error.response;
+    if (400 <= status < 500) {
+      const { errors } = data;
+      return res.render("admin/postEdit/error", {
+        active: "admin",
+        isAdmin,
+        errors,
+      });
+    }
+    next(error);
+  }
 };
 
 const postEdit = async (req, res) => {
@@ -83,12 +124,27 @@ const postEdit = async (req, res) => {
   if (!isAdmin) {
     return res.redirect(307, "/");
   }
-  const { data } = await axios.put(`${API_SERVER}/posts/${postId}`, {
-    ...req.body,
-    password: ADMIN_PASSWORD,
-  });
+  try {
+    const { data } = await axios.put(
+      encodeURI(`${API_SERVER}/posts/${postId}`),
+      {
+        ...req.body,
+      },
+      {
+        headers: {
+          Authorization: ADMIN_PASSWORD,
+        },
+      }
+    );
 
-  res.json(data);
+    res.json(data);
+  } catch (error) {
+    const { data, status } = error.response;
+    if (400 <= status < 500) {
+      return res.status(status).json(data);
+    }
+    next(error);
+  }
 };
 
 module.exports = {
