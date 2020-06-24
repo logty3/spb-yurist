@@ -1,6 +1,6 @@
 const { Reviews } = require("../models");
 const { ADMIN_PASSWORD } = require("../../config");
-const { validator } = require("../utils");
+const { validator } = require("../../utils");
 
 const reviewAdd = async (req, res) => {
   const { name, text, owner } = req.body;

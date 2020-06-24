@@ -1,6 +1,6 @@
 const { Posts } = require("../models");
 const { ADMIN_PASSWORD } = require("../../config");
-const { validator } = require("../utils");
+const { validator } = require("../../utils");
 
 const postAdd = async (req, res) => {
   const { title, body } = req.body;
