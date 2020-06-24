@@ -30,7 +30,7 @@ const postAdd = async (req, res) => {
     const post = await Posts.create({
       title,
       body,
-    });
+    }).select({ title: 1, body: 1, createdAt: 1, postId: 1 });
 
     res.json({
       ok: true,
@@ -72,11 +72,15 @@ const postsGet = async (req, res) => {
     let posts = await Posts.find()
       .sort({ postId: -1 })
       .skip(perPage * page - perPage)
-      .limit(perPage);
+      .limit(perPage)
+      .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
 
     if (posts.length == 0) {
       const last = count % perPage || perPage;
-      posts = await Posts.find().skip(count - last);
+      posts = await Posts.find()
+        .skip(count - last)
+        .sort({ postId: -1 })
+        .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
     }
 
     res.status(200).json({ ok: true, posts, pages, page });
@@ -107,7 +111,12 @@ const postGet = async (req, res) => {
   }
 
   try {
-    const post = await Posts.findOne({ postId });
+    const post = await Posts.findOne({ postId }).select({
+      title: 1,
+      body: 1,
+      createdAt: 1,
+      postId: 1,
+    });
     if (!post)
       return res.status(404).json({
         ok: false,
@@ -164,7 +173,7 @@ const postEdit = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select({ title: 1, body: 1, createdAt: 1, postId: 1 });
 
     if (!post) {
       return res.status(404).json({

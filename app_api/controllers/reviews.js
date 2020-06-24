@@ -22,7 +22,7 @@ const reviewAdd = async (req, res) => {
       name,
       text,
       owner,
-    });
+    }).select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
 
     res.json({
       ok: true,
@@ -64,11 +64,15 @@ const reviewsGet = async (req, res) => {
     let reviews = await Reviews.find()
       .sort({ reviewId: -1 })
       .skip(perPage * page - perPage)
-      .limit(perPage);
+      .limit(perPage)
+      .select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
 
     if (reviews.length == 0) {
       const last = count % perPage || perPage;
-      reviews = await Reviews.find().skip(count - last);
+      reviews = await Reviews.find()
+        .sort({ reviewId: -1 })
+        .skip(count - last)
+        .select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
     }
 
     res.status(200).json({ ok: true, reviews, pages, page });
@@ -100,7 +104,12 @@ const reviewGet = async (req, res) => {
   }
 
   try {
-    const review = await Reviews.findOne({ reviewId });
+    const review = await Reviews.findOne({ reviewId }).select({
+      title: 1,
+      body: 1,
+      createdAt: 1,
+      reviewId: 1,
+    });
     if (!review)
       return res.status(404).json({
         ok: false,
@@ -151,7 +160,7 @@ const reviewEdit = async (req, res) => {
       {
         new: true,
       }
-    );
+    ).select({ title: 1, body: 1, createdAt: 1, reviewId: 1 });
 
     if (!review) {
       return res.status(404).json({
