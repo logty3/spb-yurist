@@ -1,4 +1,4 @@
-<%- include("layout/header") %>
+<%- include("../layout/header") %>
 
 <div class="col-md-10  list-group-item pb-4">
     <form id="review_form">
@@ -237,8 +237,11 @@
                     body: JSON.stringify(body),
                 });
                 const result = await response.json();
+
                 if (result.ok) {
                     document.location.reload();
+                } else {
+                    console.log(result.errors)
                 }
             } catch (err) {
                 console.log(err);
@@ -345,4 +348,4 @@
 
 
 
-<%- include("layout/footer") %>
+<%- include("../layout/footer") %>

@@ -4,24 +4,53 @@ const axios = require("axios");
 
 const blogPage = async (req, res) => {
   const { isAdmin } = req.session;
-  const { data } = await axios.get(`${API_SERVER}/posts`, {
-    params: { ...req.query, perPage: POSTS_PER_PAGE },
-  });
+  try {
+    const { data } = await axios.get(`${API_SERVER}/posts`, {
+      params: { page: 1, ...req.query, perPage: POSTS_PER_PAGE },
+    });
 
-  const { posts, pages, page } = data;
+    const { posts, pages, page } = data;
 
-  res.render("blog/blog", { active: "blog", posts, page, pages, isAdmin });
+    res.render("blog/blog/correctly", {
+      active: "blog",
+      posts,
+      page,
+      pages,
+      isAdmin,
+    });
+  } catch (error) {
+    if (400 <= error.response.status < 500) {
+      const { errors } = error.response.data;
+      return res.render("blog/blog/error", {
+        active: "blog",
+        isAdmin,
+        errors,
+      });
+    }
+    next(error);
+  }
 };
 
 const postPage = async (req, res) => {
   const { isAdmin } = req.session;
   const { postId } = req.params;
+  try {
+    const { data } = await axios.get(`${API_SERVER}/posts/${postId}`);
 
-  const { data } = await axios.get(`${API_SERVER}/posts/${postId}`);
+    const { post } = data;
 
-  const { post } = data;
-
-  res.render("blog/post", { active: "", post, isAdmin });
+    res.render("blog/post", { active: "blog", post, isAdmin });
+  } catch (error) {
+    if (400 <= error.response.status < 500) {
+      const { errors } = error.response.data;
+      return res.render("blog/post/error", {
+        active: "blog",
+        isAdmin,
+        errors,
+      });
+    }
+    next(error);
+  }
 };
 
 module.exports = {
