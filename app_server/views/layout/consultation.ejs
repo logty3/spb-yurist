@@ -4,7 +4,9 @@
         <div class="mb-3">
             <label for="consultation-name">Ваше имя</label>
             <input type="text" class="form-control" name="name" id="consultation-name">
-
+            <div class="invalid-feedback">
+                Имя должно содержать от 2 до 32 русских или английских символов
+            </div>
         </div>
         <div id="feedback">
             <div class="mb-3">
@@ -17,6 +19,9 @@
             <div class="mb-3">
                 <label for="consultation-email">или почтовый адрес</label>
                 <input type="text" class="form-control" name="email" id="consultation-email">
+                <div class="invalid-feedback">
+                    Введите корректный адрес электронной почты
+                </div>
             </div>
 
         </div>
@@ -24,10 +29,11 @@
         <div class="mb-3">
             <label for="consultation-question">Какой вопрос Вас интересует?</label>
             <textarea class="form-control" name="question" id="consultation-question" rows="3"></textarea>
+            <div class="invalid-feedback">
+                Вопрос должен содержать от 5 до 200 символов
+            </div>
         </div>
         <button class="btn btn-primary btn-lg btn-block">Отправить</button>
-        <div class="invalid-feedback">
-            Имя должно содержать от 2 до 32 русских или английских символов.
-        </div>
+
     </form>
 </div>
