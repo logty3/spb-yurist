@@ -4,15 +4,30 @@
         <div class="mb-3">
             <label for="consultation-name">Ваше имя</label>
             <input type="text" class="form-control" name="name" id="consultation-name">
+
         </div>
-        <div class="mb-3">
-            <label for="consultation-feedback">Номер телефона или почтовый адрес</label>
-            <input type="text" class="form-control" name="feedback" id="consultation-feedback">
+        <div id="feedback">
+            <div class="mb-3">
+                <label for="consultation-number">Номер телефона</label>
+                <input type="text" class="form-control" name="number" id="consultation-number" value="8(___)___-__-__">
+                <div class="invalid-feedback">
+                    Введите корректный номер телефона
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="consultation-email">или почтовый адрес</label>
+                <input type="text" class="form-control" name="email" id="consultation-email">
+            </div>
+
         </div>
+
         <div class="mb-3">
             <label for="consultation-question">Какой вопрос Вас интересует?</label>
             <textarea class="form-control" name="question" id="consultation-question" rows="3"></textarea>
         </div>
         <button class="btn btn-primary btn-lg btn-block">Отправить</button>
+        <div class="invalid-feedback">
+            Имя должно содержать от 2 до 32 русских или английских символов.
+        </div>
     </form>
 </div>

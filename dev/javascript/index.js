@@ -4,13 +4,51 @@ import "bootstrap";
 
 const consultationForm = document.getElementById("consultation_form");
 
+const consultationNumber = document.getElementById("consultation-number");
+/*
+consultationNumber.onkeypress = (e) => {
+  e.preventDefault();
+  console.log(e.key);
+  if (/\d/.exec(e.key)) {
+    consultationNumber.value = consultationNumber.value.replace("_", e.key);
+  }
+};*/
+consultationNumber.onkeydown = (e) => {
+  e.preventDefault();
+  if (e.code == "Delete" || e.code == "Backspace") {
+    if (consultationNumber.value.indexOf("_") != 2) {
+      consultationNumber.value = consultationNumber.value
+        .split("")
+        .reverse()
+        .join("")
+        .replace(/\d/, "_")
+        .split("")
+        .reverse()
+        .join("");
+    }
+  }
+
+  if (/\d/.exec(e.key)) {
+    consultationNumber.value = consultationNumber.value.replace("_", e.key);
+  }
+};
+consultationNumber.onpaste = (e) => {
+  e.preventDefault();
+};
+
+consultationNumber.on;
+
 consultationForm &&
   (consultationForm.onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(consultationForm);
-    let body = {};
+    const body = {};
     for (let [name, value] of formData) body[name] = value;
+    console.log(body);
+    consultationForm.classList.add("is-invalid");
+    consultation - number;
 
+    return;
     const response = await fetch("/consultation", {
       method: "POST",
       headers: { "content-type": "application/json" },
