@@ -43,6 +43,11 @@ module.exports = (valiadtion = {}) => (str, key) => {
         errors.push({ key, message: "too long" });
       }
     }
+    if (valiadtion.regEx) {
+      if (!str.match(valiadtion.regEx)) {
+        errors.push({ key, message: "no mutch" });
+      }
+    }
   }
   return errors;
 };
