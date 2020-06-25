@@ -82,6 +82,31 @@ if (consultationForm) {
     });
 
     const data = await response.json();
-    console.log(data);
+    if (response.status < 400) {
+    } else if (400 <= response.status < 500) {
+      data.errors.forEach((err) => {
+        switch (err.key) {
+          case "name":
+            consultationForm["consultation-name"].classList.add("is-invalid");
+            break;
+          case "question":
+            consultationForm["consultation-question"].classList.add(
+              "is-invalid"
+            );
+            break;
+          case "number":
+            numberErr = true;
+            break;
+          case "email":
+            emailErr = true;
+            break;
+        }
+        if (numberErr && emailErr) {
+          consultationForm["consultation-number"].classList.add("is-invalid");
+          consultationForm["consultation-email"].classList.add("is-invalid");
+        }
+      });
+    } else {
+    }
   };
 }
