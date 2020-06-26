@@ -76,7 +76,10 @@
         <%if(review.owner==owner){%>
         <form id="form<%-review.reviewId%>" hidden>
             <div class="card-header">
-                <input class="textarea-name" name="name" value="<%=review.name%>"> </textarea>
+                <input class="textarea-name" name="name" value="<%=review.name%>">
+                <div class="invalid-feedback">
+                    Имя должно содержать от 2 до 32 русских или английских символов
+                </div>
                 <button class="btn btn-success successButton " type="submit">
                     <svg class="bi bi-check-circle" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
                         xmlns="http://www.w3.org/2000/svg">
@@ -100,6 +103,9 @@
             </div>
             <div class="card-body">
                 <textarea class="textarea-text" name="text"> <%=review.text%></textarea>
+                <div class="invalid-feedback">
+                    Отзыв должен содержать от 5 до 1000 символов
+                </div>
             </div>
         </form>
 
@@ -274,7 +280,7 @@
             if (response.status < 400) {
                 document.location.reload();
             } else if (400 <= response.status < 500) {
-                console.log(data.errors)
+
                 data.errors.forEach((err) => {
                     switch (err.key) {
                         case "name":
@@ -346,6 +352,13 @@
     const forms = document.getElementById("review-block").querySelectorAll("form")
     if (forms) {
         for (let form of forms) {
+            form.onclick = (e) => {
+                Array.from(form.getElementsByClassName("is-invalid")).forEach(
+                    (el) => {
+                        el.classList.remove("is-invalid");
+                    }
+                );
+            };
             form.onsubmit = async (e) => {
                 e.preventDefault()
                 const data = new FormData(form);
@@ -354,6 +367,29 @@
                 for (let [name, value] of data) {
                     body[name] = value;
                 }
+
+                const inputName = form.getElementsByClassName("textarea-name")[0]
+                const inputText = form.getElementsByClassName("textarea-text")[0]
+                let haveError = false;
+                if (
+                    body.name.match(/[^A-Za-zА-Яа-я\s]/) ||
+                    body.name.length < 2 ||
+                    body.name.length > 32
+                ) {
+                    inputName.classList.add("is-invalid");
+                    haveError = true;
+                }
+                if (
+                    body.text.match(/[^A-Za-zА-Яа-я\d\(\)\s]/) ||
+                    body.text.length < 5 ||
+                    body.text.length > 1000
+                ) {
+                    inputText.classList.add("is-invalid");
+                    haveError = true;
+                }
+
+                if (haveError) return;
+
                 const { id } = e.target;
 
                 const reviewId = id.split("form")[1]
@@ -366,8 +402,9 @@
                         },
                         body: JSON.stringify(body),
                     });
-                    const result = await response.json();
-                    if (result.ok) {
+                    const data = await response.json();
+
+                    if (response.status < 400) {
                         const { name, text } = body
 
                         const cardDiv = form.parentNode;
@@ -379,7 +416,30 @@
                         divText.innerText = text
                         cardArea.hidden = false
                         cardform.hidden = true
+                    } else if (400 <= response.status < 500) {
+
+                        data.errors.forEach((err) => {
+                            switch (err.key) {
+                                case "name":
+                                    inputName.classList.add("is-invalid");
+                                    break;
+                                case "text":
+                                    inputText.classList.add(
+                                        "is-invalid"
+                                    );
+                                    break;
+                            }
+                        });
+                    } else {
                     }
+
+
+
+
+
+
+
+
                 } catch (err) {
                     console.log(err);
                 }

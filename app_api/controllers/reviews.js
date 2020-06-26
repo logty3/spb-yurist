@@ -154,13 +154,15 @@ const reviewEdit = async (req, res) => {
   }
 
   const errors = [
-    ...validator({ exists: true, regEx: /[^A-Za-zА-Яа-я\s]/, min: 2, max: 32 })(
-      name,
-      "name"
-    ),
     ...validator({
       exists: true,
-      regEx: /[^A-Za-zА-Яа-я\d\(\)\s]/,
+      excludeRegEx: /[^A-Za-zА-Яа-я\s]/,
+      min: 2,
+      max: 32,
+    })(name, "name"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\d\(\)\s]/,
       min: 5,
       max: 1000,
     })(text, "text"),
