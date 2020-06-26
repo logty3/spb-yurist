@@ -32,7 +32,7 @@ const reviewAdd = async (req, res) => {
       name,
       text,
       owner,
-    }).select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
+    });
 
     res.json({
       ok: true,
@@ -75,14 +75,14 @@ const reviewsGet = async (req, res) => {
       .sort({ reviewId: -1 })
       .skip(perPage * page - perPage)
       .limit(perPage)
-      .select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
+      .select({ name: 1, text: 1, createdAt: 1, reviewId: 1, owner: 1 });
 
     if (reviews.length == 0) {
       const last = count % perPage || perPage;
       reviews = await Reviews.find()
         .sort({ reviewId: -1 })
         .skip(count - last)
-        .select({ name: 1, text: 1, createdAt: 1, reviewId: 1 });
+        .select({ name: 1, text: 1, createdAt: 1, reviewId: 1, owner: 1 });
     }
 
     res.status(200).json({ ok: true, reviews, pages, page });
@@ -119,6 +119,7 @@ const reviewGet = async (req, res) => {
       text: 1,
       createdAt: 1,
       reviewId: 1,
+      owner: 1,
     });
     if (!review)
       return res.status(404).json({
@@ -142,6 +143,15 @@ const reviewEdit = async (req, res) => {
   const { reviewId } = req.params;
 
   const { name, text, owner } = req.body;
+
+  const { authorization: password } = req.headers;
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(403).json({
+      ok: false,
+      errors: [{ message: "access denied" }],
+    });
+  }
 
   const errors = [
     ...validator({ exists: true, regEx: /[^A-Za-zА-Яа-я\s]/, min: 2, max: 32 })(

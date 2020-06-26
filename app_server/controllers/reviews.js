@@ -13,6 +13,7 @@ const reviewAdd = async (req, res, next) => {
       ...req.body,
       owner: id,
     });
+
     if (data.ok) {
       if (!req.session.reviews) {
         req.session.reviews = [];
@@ -74,10 +75,18 @@ const reviewEdit = async (req, res, next) => {
   }
 
   try {
-    const { data } = await axios.put(`${API_SERVER}/reviews/${reviewId}`, {
-      ...req.body,
-      owner: id,
-    });
+    const { data } = await axios.put(
+      `${API_SERVER}/reviews/${reviewId}`,
+      {
+        ...req.body,
+        owner: id,
+      },
+      {
+        headers: {
+          Authorization: ADMIN_PASSWORD,
+        },
+      }
+    );
 
     res.json(data);
   } catch (error) {

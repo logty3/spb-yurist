@@ -272,6 +272,7 @@
             const data = await response.json();
 
             if (response.status < 400) {
+                document.location.reload();
             } else if (400 <= response.status < 500) {
                 console.log(data.errors)
                 data.errors.forEach((err) => {
