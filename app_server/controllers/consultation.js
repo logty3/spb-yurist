@@ -8,20 +8,28 @@ const addConsultation = async (req, res) => {
   const { name, number, question } = req.body;
   let { email } = req.body;
   const errors = [
-    ...validator({ exists: true, min: 2, max: 32 })(name, "name"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\s]/,
+      min: 2,
+      max: 32,
+    })(name, "name"),
     ...validator({ exists: true, regEx: /^8\(\d{3}\)\d{3}-\d{2}-\d{2}$/ })(
       number,
       "number"
     ),
-    ...validator({ exists: true, min: 5, max: 200 })(question, "question"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\d\(\)\s]/,
+      min: 5,
+      max: 200,
+    })(question, "question"),
   ];
   try {
     await promisify(dns.resolve)(email.split("@")[1], "MX");
   } catch (error) {
-    if (error.code === "ENOTFOUND") {
-      errors.push({ key: "email", message: "not verified" });
-      email = undefined;
-    }
+    errors.push({ key: "email", message: "not verified" });
+    email = undefined;
   }
 
   if (errors.length > 1) {

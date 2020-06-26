@@ -6,8 +6,18 @@ const reviewAdd = async (req, res) => {
   const { name, text, owner } = req.body;
 
   const errors = [
-    ...validator({ exists: true, min: 2, max: 32 })(name, "name"),
-    ...validator({ exists: true, min: 5, max: 1000 })(text, "text"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\s]/,
+      min: 2,
+      max: 32,
+    })(name, "name"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\d\(\)\s]/,
+      min: 5,
+      max: 1000,
+    })(text, "text"),
   ];
 
   if (errors.length > 0) {
@@ -134,8 +144,16 @@ const reviewEdit = async (req, res) => {
   const { name, text, owner } = req.body;
 
   const errors = [
-    ...validator({ exists: true, min: 2, max: 32 })(name, "name"),
-    ...validator({ exists: true, min: 5, max: 1000 })(text, "text"),
+    ...validator({ exists: true, regEx: /[^A-Za-zА-Яа-я\s]/, min: 2, max: 32 })(
+      name,
+      "name"
+    ),
+    ...validator({
+      exists: true,
+      regEx: /[^A-Za-zА-Яа-я\d\(\)\s]/,
+      min: 5,
+      max: 1000,
+    })(text, "text"),
     ...validator({
       exists: true,
       isNum: true,

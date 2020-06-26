@@ -5,13 +5,18 @@
         <h3>Оставить отзыв</h3>
         <div class="mb-3">
             <label for="rewiew-name">Ваше имя</label>
-            <input type=" text" class="form-control" name="name" id="rewiew-name" required pattern="[a-zA-Zа-яА-Я_]*"
-                minlength="2">
+            <input type=" text" class="form-control" name="name" id="rewiew-name">
+            <div class="invalid-feedback">
+                Имя должно содержать от 2 до 32 русских или английских символов
+            </div>
         </div>
 
         <div class=" mb-3">
             <label for="rewiew-text">Текст отзыва</label>
-            <textarea class="form-control" name="text" id="rewiew-text" rows="3" required></textarea>
+            <textarea class="form-control" name="text" id="rewiew-text"></textarea>
+            <div class="invalid-feedback">
+                Отзыв должен содержать от 5 до 1000 символов
+            </div>
         </div>
         <button class="btn btn-primary btn-lg btn-block">Отправить</button>
     </form>
@@ -218,35 +223,75 @@
 
 <script>
     const rewiewForm = document.getElementById("review_form");
-    rewiewForm &&
-        (rewiewForm.onsubmit = async (e) => {
-            e.preventDefault();
-            const data = new FormData(rewiewForm);
-            const body = {};
-
-            for (let [name, value] of data) {
-                body[name] = value;
+    rewiewForm.onclick = (e) => {
+        Array.from(rewiewForm.getElementsByClassName("is-invalid")).forEach(
+            (el) => {
+                el.classList.remove("is-invalid");
             }
+        );
+    };
 
-            try {
-                const response = await fetch("/reviews", {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json",
-                    },
-                    body: JSON.stringify(body),
+    (rewiewForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const data = new FormData(rewiewForm);
+        const body = {};
+
+        for (let [name, value] of data) {
+            body[name] = value;
+        }
+        let haveError = false;
+        if (
+            body.name.match(/[^A-Za-zА-Яа-я\s]/) ||
+            body.name.length < 2 ||
+            body.name.length > 32
+        ) {
+
+            rewiewForm["rewiew-name"].classList.add("is-invalid");
+            haveError = true;
+        }
+        if (
+            body.text.match(/[^A-Za-zА-Яа-я\d\(\)\s]/) ||
+            body.text.length < 5 ||
+            body.text.length > 1000
+        ) {
+            rewiewForm["rewiew-text"].classList.add("is-invalid");
+            haveError = true;
+        }
+
+        if (haveError) return;
+
+        try {
+            const response = await fetch("/reviews", {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify(body),
+            });
+
+            const data = await response.json();
+
+            if (response.status < 400) {
+            } else if (400 <= response.status < 500) {
+                console.log(data.errors)
+                data.errors.forEach((err) => {
+                    switch (err.key) {
+                        case "name":
+                            rewiewForm["rewiew-name"].classList.add("is-invalid");
+                            break;
+                        case "text":
+                            rewiewForm["rewiew-text"].classList.add(
+                                "is-invalid"
+                            );
+                            break;
+                    }
                 });
-                const result = await response.json();
-
-                if (result.ok) {
-                    document.location.reload();
-                } else {
-                    console.log(result.errors)
-                }
-            } catch (err) {
-                console.log(err);
+            } else {
             }
-        });
+        } catch (err) {
+            console.log(err);
+        }
+    });
 
 
 

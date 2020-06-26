@@ -29,7 +29,7 @@ module.exports = {
   plugins: [
     new NodemonPlugin({
       script: "./app.js",
-      watch: ["./app_server", "./app_api", "./config", "./app.js"],
+      watch: ["./app_server", "./utils", "./app_api", "./config", "./app.js"],
       ext: "js",
     }),
     new MiniCssExtractPlugin({ filename: "stylesheets/styles.css" }),

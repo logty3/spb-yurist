@@ -42,7 +42,7 @@ if (consultationForm) {
     for (let [name, value] of formData) body[name] = value;
     let haveError = false;
     if (
-      body.name.match(/[^A-Za-zА-Яа-я\s]{2,32}/) ||
+      body.name.match(/[^A-Za-zА-Яа-я\s]/) ||
       body.name.length < 2 ||
       body.name.length > 32
     ) {

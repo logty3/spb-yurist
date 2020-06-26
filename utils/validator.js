@@ -1,5 +1,6 @@
 module.exports = (valiadtion = {}) => (str, key) => {
   const errors = [];
+
   if (!str) {
     if (valiadtion.exists) {
       errors.push({ key, message: "required" });
@@ -43,9 +44,15 @@ module.exports = (valiadtion = {}) => (str, key) => {
         errors.push({ key, message: "too long" });
       }
     }
+
+    if (valiadtion.excludeRegEx) {
+      if (str.match(valiadtion.excludeRegEx)) {
+        errors.push({ key, message: "exclude" });
+      }
+    }
     if (valiadtion.regEx) {
       if (!str.match(valiadtion.regEx)) {
-        errors.push({ key, message: "no mutch" });
+        errors.push({ key, message: "no match" });
       }
     }
   }
