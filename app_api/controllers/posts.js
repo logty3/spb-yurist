@@ -15,7 +15,12 @@ const postAdd = async (req, res) => {
   }
 
   const errors = [
-    ...validator({ exists: true, min: 5, max: 50 })(title, "title"),
+    ...validator({
+      exists: true,
+      min: 5,
+      excludeRegEx: /[^A-Za-zА-Яа-я\s]/,
+      max: 50,
+    })(title, "title"),
     ...validator({ exists: true, min: 100, max: 10000 })(body, "body"),
   ];
 

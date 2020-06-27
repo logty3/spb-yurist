@@ -107,6 +107,7 @@ if (consultationForm) {
         }
       });
     } else {
+      console.log(data.errors);
     }
   };
 }

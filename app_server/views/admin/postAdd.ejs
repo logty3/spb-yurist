@@ -5,13 +5,18 @@
         <h3>Создание поста</h3>
         <div class="mb-3">
             <label for="post-title">Заголовок</label>
-            <input type=" text" class="form-control" name="title" id="post-title" required pattern="[a-zA-Zа-яА-Я\._ ]*"
-                minlength="2">
+            <input type=" text" class="form-control" name="title" id="post-title">
+            <div class="invalid-feedback">
+                Заголовок должен содержать от 5 до 50 русских или английских символов
+            </div>
         </div>
 
         <div class=" mb-3">
             <label for="post-body">Текст</label>
-            <textarea class="form-control" name="body" id="post-body" rows="3" required></textarea>
+            <textarea class="form-control" name="body" id="post-body" rows="3"></textarea>
+            <div class="invalid-feedback">
+                Текст должен содержать от 100 до 10000 символов
+            </div>
         </div>
         <button class=" btn btn-primary btn-lg btn-block">Отправить</button>
     </form>
@@ -19,6 +24,15 @@
 
 <script>
     const postForm = document.getElementById("post_form");
+
+    postForm.onclick = (e) => {
+        Array.from(form.getElementsByClassName("is-invalid")).forEach(
+            (el) => {
+                el.classList.remove("is-invalid");
+            }
+        );
+    };
+
 
     postForm.onsubmit = async (e) => {
         e.preventDefault();
@@ -28,6 +42,25 @@
         for (let [name, value] of data) {
             body[name] = value;
         }
+
+        if (
+            body.title.match(/[^A-Za-zА-Яа-я\s]/) ||
+            body.title.length < 5 ||
+            body.title.length > 50
+        ) {
+            postForm["post-title"].classList.add("is-invalid");
+            haveError = true;
+        }
+        if (
+
+            body.body.length < 100 ||
+            body.body.length > 10000
+        ) {
+            postForm["post-body"].classList.add("is-invalid");
+            haveError = true;
+        }
+
+        if (haveError) return;
 
         try {
             const response = await fetch("/admin/post", {
