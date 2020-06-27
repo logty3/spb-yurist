@@ -35,7 +35,7 @@ const postAdd = async (req, res) => {
     const post = await Posts.create({
       title,
       body,
-    }).select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+    });
 
     res.json({
       ok: true,
@@ -154,7 +154,12 @@ const postEdit = async (req, res) => {
   }
 
   const errors = [
-    ...validator({ exists: true, min: 5, max: 50 })(title, "title"),
+    ...validator({
+      exists: true,
+      excludeRegEx: /[^A-Za-zА-Яа-я\s]/,
+      min: 5,
+      max: 50,
+    })(title, "title"),
     ...validator({ exists: true, min: 100, max: 10000 })(body, "body"),
     ...validator({
       exists: true,

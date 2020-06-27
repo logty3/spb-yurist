@@ -28,7 +28,7 @@
     const postForm = document.getElementById("post_form");
 
     postForm.onclick = (e) => {
-        Array.from(form.getElementsByClassName("is-invalid")).forEach(
+        Array.from(postForm.getElementsByClassName("is-invalid")).forEach(
             (el) => {
                 el.classList.remove("is-invalid");
             }
@@ -44,6 +44,7 @@
             body[name] = value;
         }
 
+        let haveError = false
         if (
             body.title.match(/[^A-Za-zА-Яа-я\s]/) ||
             body.title.length < 5 ||
@@ -71,8 +72,22 @@
                 },
                 body: JSON.stringify(body),
             });
-            const { post } = await response.json();
-            document.location = `/blog/${post.postId}`
+            const data = await response.json();
+            if (response.status < 400) {
+                document.location = `/blog/${data.post.postId}`
+            } else if (400 <= response.status < 500) {
+                data.errors.forEach((err) => {
+                    switch (err.key) {
+                        case "title":
+                            postForm["post-title"].classList.add("is-invalid");
+                            break;
+                        case "body":
+                            postForm["post-body"].classList.add("is-invalid");
+                            break;
+                    }
+                });
+            } else {
+            }
         } catch (err) {
             console.log(err);
         }
