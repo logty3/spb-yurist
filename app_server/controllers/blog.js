@@ -1,7 +1,8 @@
 const { API_SERVER, POSTS_PER_PAGE } = require("../../config");
 
 const axios = require("axios");
-
+const moment = require("moment");
+moment.locale("ru");
 const blogPage = async (req, res, next) => {
   const { isAdmin } = req.session;
   try {
@@ -16,6 +17,7 @@ const blogPage = async (req, res, next) => {
       posts,
       page,
       pages,
+      moment,
       isAdmin,
     });
   } catch (error) {
@@ -42,7 +44,12 @@ const postPage = async (req, res, next) => {
 
     const { post } = data;
 
-    res.render("blog/post/correctly", { active: "blog", post, isAdmin });
+    res.render("blog/post/correctly", {
+      active: "blog",
+      post,
+      moment,
+      isAdmin,
+    });
   } catch (error) {
     const { status, data } = error.response;
     if (400 <= status < 500) {

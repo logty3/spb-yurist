@@ -3,7 +3,8 @@ const {
   REWIEWS_PER_PAGE,
   ADMIN_PASSWORD,
 } = require("../../config");
-
+const moment = require("moment");
+moment.locale("ru");
 const axios = require("axios");
 
 const reviewAdd = async (req, res, next) => {
@@ -46,6 +47,7 @@ const reviewsPage = async (req, res, next) => {
       active: "reviews",
       reviews,
       page,
+      moment,
       pages,
       isAdmin,
       owner,

@@ -11,7 +11,7 @@
         <div class="card  mb-1">
             <div class="card-header">
 
-                <a href="/blog/<%-post.postId%>"><%-post.title%></a>
+                <a href="/blog/<%-post.postId%>"><%=post.title%></a>
                 <% if (isAdmin) {%>
                 <a class="btn btn-warning" href="/admin/post/<%-post.postId%>">
                     <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
@@ -40,6 +40,9 @@
                     </div>
                 </div>
                 <%}%>
+                <spam class="date">
+                    <%= moment(post.createdAt).format('LL'); %>
+                </spam>
             </div>
             <div class="card-body">
                 <% if(post.body.length<500){ %>
@@ -48,6 +51,7 @@
                 <%-post.body.slice(0,post.body.slice(0,500).lastIndexOf(".")+1)%>
                 <%} %>
             </div>
+
         </div>
         <% }) %>
 

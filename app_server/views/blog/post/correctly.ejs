@@ -3,7 +3,7 @@
 <div class="card mb-10">
 
     <div class="card-header">
-        <%-post.title%>
+        <%=post.title%>
         <% if (isAdmin) {%>
         <a class="btn btn-warning" href="/admin/post/<%-post.postId%>">
             <svg class="bi bi-pencil" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
@@ -31,6 +31,7 @@
             </div>
         </div>
         <%}%>
+        <%= moment(post.createdAt).format('LL'); %>
     </div>
     <div class="card-body">
         <%-post.body%>
