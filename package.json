@@ -7,7 +7,8 @@
     "start": "node app.js",
     "dev": "set NODE_ENV=development && webpack --watch --mode development",
     "build": "webpack --mode production",
-    "mocks": "set NODE_ENV=development && node mocks.js"
+    "mocks": "set NODE_ENV=development && node mocks.js",
+    "local": "set NODE_LOCAL=1 && npm run dev"
   },
   "keywords": [],
   "author": "",

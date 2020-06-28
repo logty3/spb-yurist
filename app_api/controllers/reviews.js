@@ -76,12 +76,18 @@ const reviewsGet = async (req, res) => {
       .skip(perPage * page - perPage)
       .limit(perPage)
       .select({ name: 1, text: 1, createdAt: 1, reviewId: 1, owner: 1 });
-
-    if (reviews.length == 0) {
-      const last = count % perPage || perPage;
+    if (count > perPage) {
+      if (reviews.length == 0) {
+        const last = count % perPage || perPage;
+        reviews = await Reviews.find()
+          .sort({ reviewId: -1 })
+          .skip(count - last)
+          .select({ name: 1, text: 1, createdAt: 1, reviewId: 1, owner: 1 });
+      }
+    } else {
       reviews = await Reviews.find()
         .sort({ reviewId: -1 })
-        .skip(count - last)
+        .skip(count)
         .select({ name: 1, text: 1, createdAt: 1, reviewId: 1, owner: 1 });
     }
 

@@ -78,11 +78,18 @@ const postsGet = async (req, res) => {
       .skip(perPage * page - perPage)
       .limit(perPage)
       .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
-
-    if (posts.length == 0) {
-      const last = count % perPage || perPage;
+    if (count > perPage) {
+      if (posts.length == 0) {
+        const last = count % perPage || perPage;
+        console.log(last);
+        posts = await Posts.find()
+          .skip(count - last)
+          .sort({ postId: -1 })
+          .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+      }
+    } else {
       posts = await Posts.find()
-        .skip(count - last)
+        .skip(count)
         .sort({ postId: -1 })
         .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
     }
