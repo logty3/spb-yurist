@@ -77,21 +77,21 @@ const postsGet = async (req, res) => {
       .sort({ postId: -1 })
       .skip(perPage * page - perPage)
       .limit(perPage)
-      .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+      .select({ title: 1, body: 1, createdAt: 1, postId: 1, visitors: 1 });
     if (count > perPage) {
       if (posts.length == 0) {
         const last = count % perPage || perPage;
-        console.log(last);
+
         posts = await Posts.find()
           .skip(count - last)
           .sort({ postId: -1 })
-          .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+          .select({ title: 1, body: 1, createdAt: 1, postId: 1, visitors: 1 });
       }
     } else {
       posts = await Posts.find()
         .skip(count)
         .sort({ postId: -1 })
-        .select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+        .select({ title: 1, body: 1, createdAt: 1, postId: 1, visitors: 1 });
     }
 
     res.status(200).json({ ok: true, posts, pages, page });
@@ -106,6 +106,11 @@ const postsGet = async (req, res) => {
 
 const postGet = async (req, res) => {
   const { postId } = req.params;
+
+  if (!req.session.visited) {
+    req.session.visited = {};
+  }
+
   const errors = [
     ...validator({
       exists: true,
@@ -127,7 +132,12 @@ const postGet = async (req, res) => {
       body: 1,
       createdAt: 1,
       postId: 1,
+      visitors: 1,
     });
+    if (!req.session.visited[postId]) {
+      await Posts.findOneAndUpdate({ postId }, { $inc: { visitors: 1 } });
+      req.session.visited[postId] = true;
+    }
     if (!post)
       return res.status(404).json({
         ok: false,
@@ -189,7 +199,7 @@ const postEdit = async (req, res) => {
       {
         new: true,
       }
-    ).select({ title: 1, body: 1, createdAt: 1, postId: 1 });
+    ).select({ title: 1, body: 1, createdAt: 1, postId: 1, visitors: 1 });
 
     if (!post) {
       return res.status(404).json({

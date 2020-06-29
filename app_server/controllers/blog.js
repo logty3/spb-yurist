@@ -3,6 +3,7 @@ const { API_SERVER, POSTS_PER_PAGE } = require("../../config");
 const axios = require("axios");
 const moment = require("moment");
 moment.locale("ru");
+
 const blogPage = async (req, res, next) => {
   const { isAdmin } = req.session;
   try {
@@ -37,9 +38,13 @@ const blogPage = async (req, res, next) => {
 const postPage = async (req, res, next) => {
   const { isAdmin } = req.session;
   const { postId } = req.params;
+
   try {
     const { data } = await axios.get(
-      encodeURI(`${API_SERVER}/posts/${postId}`)
+      encodeURI(`${API_SERVER}/posts/${postId}`),
+      {
+        headers: { cookie: req.headers.cookie },
+      }
     );
 
     const { post } = data;

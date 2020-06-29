@@ -12,6 +12,7 @@ const schema = new Schema(
       required: true,
     },
     postId: { type: Number },
+    visitors: { type: Number, default: 0 },
   },
   {
     timestamps: true,
