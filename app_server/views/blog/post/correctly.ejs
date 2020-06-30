@@ -32,6 +32,7 @@
         </div>
         <%}%>
         <%= moment(post.createdAt).format('LL'); %>
+        Число просмотров: <%=post.visitors%>
     </div>
     <div class="card-body">
         <%-post.body%>

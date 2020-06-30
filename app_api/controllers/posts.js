@@ -72,6 +72,7 @@ const postsGet = async (req, res) => {
 
   try {
     const count = await Posts.countDocuments();
+
     const pages = Math.ceil(count / perPage);
     let posts = await Posts.find()
       .sort({ postId: -1 })
@@ -89,7 +90,6 @@ const postsGet = async (req, res) => {
       }
     } else {
       posts = await Posts.find()
-        .skip(count)
         .sort({ postId: -1 })
         .select({ title: 1, body: 1, createdAt: 1, postId: 1, visitors: 1 });
     }
@@ -106,10 +106,7 @@ const postsGet = async (req, res) => {
 
 const postGet = async (req, res) => {
   const { postId } = req.params;
-
-  if (!req.session.visited) {
-    req.session.visited = {};
-  }
+  const { visited } = req.query;
 
   const errors = [
     ...validator({
@@ -127,6 +124,9 @@ const postGet = async (req, res) => {
   }
 
   try {
+    if (!visited) {
+      await Posts.findOneAndUpdate({ postId }, { $inc: { visitors: 1 } });
+    }
     const post = await Posts.findOne({ postId }).select({
       title: 1,
       body: 1,
@@ -134,10 +134,7 @@ const postGet = async (req, res) => {
       postId: 1,
       visitors: 1,
     });
-    if (!req.session.visited[postId]) {
-      await Posts.findOneAndUpdate({ postId }, { $inc: { visitors: 1 } });
-      req.session.visited[postId] = true;
-    }
+
     if (!post)
       return res.status(404).json({
         ok: false,

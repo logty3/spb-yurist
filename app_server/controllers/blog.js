@@ -1,4 +1,4 @@
-const { API_SERVER, POSTS_PER_PAGE } = require("../../config");
+const { API_SERVER, POSTS_PER_PAGE, ADMIN_PASSWORD } = require("../../config");
 
 const axios = require("axios");
 const moment = require("moment");
@@ -10,7 +10,7 @@ const blogPage = async (req, res, next) => {
     const { data } = await axios.get(`${API_SERVER}/posts`, {
       params: { page: 1, ...req.query, perPage: POSTS_PER_PAGE },
     });
-
+    console.log(data);
     const { posts, pages, page } = data;
 
     res.render("blog/blog/correctly", {
@@ -38,14 +38,21 @@ const blogPage = async (req, res, next) => {
 const postPage = async (req, res, next) => {
   const { isAdmin } = req.session;
   const { postId } = req.params;
-
+  if (!req.session.visited) {
+    req.session.visited = {};
+  }
   try {
     const { data } = await axios.get(
       encodeURI(`${API_SERVER}/posts/${postId}`),
       {
-        headers: { cookie: req.headers.cookie },
+        params: {
+          visited: req.session.visited[postId],
+        },
       }
     );
+    if (!req.session.visited[postId]) {
+      req.session.visited[postId] = true;
+    }
 
     const { post } = data;
 
